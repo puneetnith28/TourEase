@@ -1,152 +1,12 @@
-import React, { useMemo, useState, useRef } from 'react';
-import { MapPin, Star, Heart, Clock, TrendingUp, Search } from 'lucide-react';
-
-// Mock destinations data
-const destinations = [
-    {
-        id: 1,
-        name: 'Paris, France',
-        image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800',
-        rating: 4.9,
-        reviews: 2847,
-        bestFor: 'Culture, Art & History',
-        season: 'Spring & Fall',
-        cost: 'Moderate to Luxury'
-    },
-    {
-        id: 2,
-        name: 'Tokyo, Japan',
-        image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800',
-        rating: 4.8,
-        reviews: 3214,
-        bestFor: 'Culture, Food & Technology',
-        season: 'Spring & Autumn',
-        cost: 'Moderate'
-    },
-    {
-        id: 3,
-        name: 'Bali, Indonesia',
-        image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800',
-        rating: 4.7,
-        reviews: 1923,
-        bestFor: 'Beach & Relaxation',
-        season: 'April - October',
-        cost: 'Budget Friendly'
-    },
-    {
-        id: 4,
-        name: 'New York, USA',
-        image: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800',
-        rating: 4.8,
-        reviews: 4521,
-        bestFor: 'City Life & Culture',
-        season: 'Fall & Spring',
-        cost: 'Moderate to Luxury'
-    },
-    {
-        id: 5,
-        name: 'Santorini, Greece',
-        image: 'https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=800',
-        rating: 4.9,
-        reviews: 2156,
-        bestFor: 'Beach & Romance',
-        season: 'May - September',
-        cost: 'Luxury'
-    },
-    {
-        id: 6,
-        name: 'Dubai, UAE',
-        image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800',
-        rating: 4.7,
-        reviews: 3892,
-        bestFor: 'Luxury & Shopping',
-        season: 'November - March',
-        cost: 'Luxury'
-    },
-    {
-        id: 7,
-        name: 'Swiss Alps, Switzerland',
-        image: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800',
-        rating: 4.9,
-        reviews: 1654,
-        bestFor: 'Mountain & Adventure',
-        season: 'Winter & Summer',
-        cost: 'Luxury'
-    },
-    {
-        id: 8,
-        name: 'Maldives',
-        image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=800',
-        rating: 5.0,
-        reviews: 1789,
-        bestFor: 'Beach & Luxury Resort',
-        season: 'November - April',
-        cost: 'Luxury'
-    },
-    {
-        id: 9,
-        name: 'Barcelona, Spain',
-        image: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=800',
-        rating: 4.8,
-        reviews: 3421,
-        bestFor: 'Culture, Beach & Architecture',
-        season: 'May - October',
-        cost: 'Moderate'
-    },
-    {
-        id: 10,
-        name: 'Iceland',
-        image: 'https://images.unsplash.com/photo-1504829857797-ddff29c27927?w=800',
-        rating: 4.9,
-        reviews: 2341,
-        bestFor: 'Nature & Adventure',
-        season: 'Summer',
-        cost: 'Moderate to Luxury'
-    },
-    {
-        id: 11,
-        name: 'Bangkok, Thailand',
-        image: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800',
-        rating: 4.6,
-        reviews: 4123,
-        bestFor: 'Culture, Food & Budget Travel',
-        season: 'November - February',
-        cost: 'Budget Friendly'
-    },
-    {
-        id: 12,
-        name: 'Rome, Italy',
-        image: 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800',
-        rating: 4.8,
-        reviews: 3876,
-        bestFor: 'History, Culture & Food',
-        season: 'Spring & Fall',
-        cost: 'Moderate'
-    }
-];
-
-// Custom hook for favorites
-function useFavorites() {
-    const [favorites, setFavorites] = useState([]);
-
-    const toggleFavorite = (id) => {
-        setFavorites(prev => 
-            prev.includes(id) 
-                ? prev.filter(fid => fid !== id)
-                : [...prev, id]
-        );
-    };
-
-    const isFavorite = (id) => favorites.includes(id);
-
-    return { toggleFavorite, isFavorite };
-}
+import React, { useMemo, useState } from 'react';
+import { MapPin, Star, Heart, Clock, Users, TrendingUp, Search } from 'lucide-react';
+import { useFavorites } from '../hooks/useFavorites';
+import { destinations } from '../utils/destinationsData';
 
 export default function Destinations() {
     const { toggleFavorite, isFavorite } = useFavorites();
     const [activeFilter, setActiveFilter] = useState('All Destinations');
     const [searchQuery, setSearchQuery] = useState('');
-    const destinationRefs = useRef({});
 
     const filters = [
         { label: 'All Destinations', keywords: [] },
@@ -176,22 +36,13 @@ export default function Destinations() {
             const query = searchQuery.toLowerCase();
             result = result.filter((d) => 
                 d.name.toLowerCase().includes(query) ||
-                d.bestFor.toLowerCase().includes(query) ||
-                d.season.toLowerCase().includes(query)
+                (d.bestFor || '').toLowerCase().includes(query) ||
+                (d.season || '').toLowerCase().includes(query)
             );
         }
         
         return result;
     }, [activeFilter, searchQuery]);
-
-    const scrollToDestination = (id) => {
-        if (destinationRefs.current[id]) {
-            destinationRefs.current[id].scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'center' 
-            });
-        }
-    };
 
     return (
         <div className="min-h-screen bg-white">
@@ -235,32 +86,16 @@ export default function Destinations() {
 
             {/* Destinations Grid */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-                {filtered.length === 0 ? (
-                    <div className="text-center py-16">
-                        <p className="text-xl text-gray-500">No destinations found matching your search.</p>
-                        <button 
-                            onClick={() => { setSearchQuery(''); setActiveFilter('All Destinations'); }}
-                            className="mt-4 text-teal-500 hover:text-teal-600 font-semibold"
-                        >
-                            Clear filters
-                        </button>
-                    </div>
-                ) : (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {filtered.map((destination) => (
-                            <div 
-                                key={destination.id}
-                                ref={(el) => destinationRefs.current[destination.id] = el}
-                            >
-                                <DestinationCard
-                                    destination={destination}
-                                    isFavorite={isFavorite(destination.id)}
-                                    onToggleFavorite={() => toggleFavorite(destination.id)}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                )}
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {filtered.map((destination) => (
+                        <DestinationCard
+                            key={destination.id}
+                            destination={destination}
+                            isFavorite={isFavorite(destination.id)}
+                            onToggleFavorite={() => toggleFavorite(destination.id)}
+                        />
+                    ))}
+                </div>
             </div>
 
             {/* CTA Section */}
@@ -286,20 +121,21 @@ function FilterButton({ label, active, onClick }) {
         <button
             type="button"
             onClick={onClick}
-            className={`px-6 py-2 rounded-full font-semibold transition ${
-                active
+            className={`px-6 py-2 rounded-full font-semibold transition ${active
                     ? 'bg-teal-500 text-white'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
+                }`}
         >
             {label}
         </button>
     );
 }
 
+
 function DestinationCard({ destination, isFavorite, onToggleFavorite }) {
     return (
         <div className="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all overflow-hidden group cursor-pointer">
+            
             {/* Image */}
             <div
                 className="h-48 relative overflow-hidden bg-cover bg-center"
