@@ -34,7 +34,7 @@ npm install -g vite
 Create a `.env` file in the root folder:
 
 
-MONGODB_URI=your-mongodb-uri
+MONGODB_URL=your-mongodb-uri
 PORT=3000
 FRONTEND_URL=https://your-frontend-domain.example
 
