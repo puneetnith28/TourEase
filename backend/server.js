@@ -18,10 +18,6 @@ require("./config/passport");
 
 // Middleware
 // NOTE: Routes must be registered AFTER CORS and body-parsing middleware. Registering routes earlier can cause CORS preflight (OPTIONS) to fail and lead to network errors like "Failed to fetch" on the client.
-// app.use(cors({
-//   origin: process.env.FRONTEND_URL ||'https://tour-ease-joh5.vercel.app' || 'http://localhost:5173',
-//   credentials: true,
-// }));
 const allowedOrigins = [
   process.env.FRONTEND_URL || "https://tour-ease-joh5.vercel.app",
   "http://localhost:5173",
