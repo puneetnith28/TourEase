@@ -109,8 +109,8 @@ Joining us for **SWOC'26**? We love PRs! 🚀
 * 💼 **Connect:** [LinkedIn](https://www.linkedin.com/in/suhani-garg-88a736318/)
 
 ---
-👥 Contributors
-Thanks to all the amazing people who have contributed to TourEase!  
+## 👥 Contributors
+Thanks to all the amazing people who have contributed to **TourEase**💜
 <a href="https://github.com/Suhani1234-5/TourEase/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Suhani1234-5/TourEase" />
 </a>
