@@ -1,10 +1,67 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   MapPin, Calendar, Users, DollarSign, Plane, 
   Hotel, Compass, Coffee, Camera, Mountain,
   ChevronRight, Sparkles, Clock, Heart, CheckCircle,
   X, ArrowLeft, Star, TrendingUp
 } from 'lucide-react';
+
+function formatItinerary(plan) {
+  const lines = plan.split("\n").filter(Boolean);
+
+  return lines.map((line, index) => {
+    // Day headings
+    if (line.startsWith("**Day")) {
+      return (
+        <h3
+          key={index}
+          className="mt-8 mb-3 text-xl font-bold text-teal-600 dark:text-teal-400"
+        >
+          {line.replace(/\*\*/g, "")}
+        </h3>
+      );
+    }
+
+    // Section headings (Morning / Afternoon / Evening / Budget)
+    if (
+      line.includes("Morning") ||
+      line.includes("Afternoon") ||
+      line.includes("Evening") ||
+      line.includes("Budget")
+    ) {
+      return (
+        <p
+          key={index}
+          className="mt-4 font-semibold text-gray-900 dark:text-gray-100"
+        >
+          {line.replace(/\*\*/g, "")}
+        </p>
+      );
+    }
+
+    // Bullet points
+    if (line.trim().startsWith("*")) {
+      return (
+        <li
+          key={index}
+          className="ml-6 list-disc text-gray-700 dark:text-gray-300"
+        >
+          {line.replace("*", "").trim()}
+        </li>
+      );
+    }
+
+    // Normal text
+    return (
+      <p
+        key={index}
+        className="mt-2 text-gray-700 dark:text-gray-300 leading-relaxed"
+      >
+        {line}
+      </p>
+    );
+  });
+}
 
 // Review Item Component
 function ReviewItem({ icon: Icon, label, value }) {
@@ -42,6 +99,60 @@ export default function TripPlanner() {
   const [previousPlan, setPreviousPlan] = useState(null);
   const [refinementInput, setRefinementInput] = useState("");
   const [isRefining, setIsRefining] = useState(false);
+  useEffect(() => {
+  const style = document.createElement("style");
+  style.innerHTML = `
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+
+      #print-area,
+      #print-area * {
+        visibility: visible;
+      }
+
+      #print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 24px;
+        background: white;
+        color: black;
+      }
+
+      * {
+        box-shadow: none !important;
+        background: white !important;
+        color: black !important;
+      }
+
+      h1, h2, h3 {
+        page-break-after: avoid;
+      }
+
+      p, li {
+        font-size: 12pt;
+        line-height: 1.6;
+      }
+
+      h3 {
+        page-break-inside: avoid;
+      }
+
+      button, nav, footer {
+        display: none !important;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+
+  return () => {
+    document.head.removeChild(style);
+  };
+}, []);
+
 
 
   const interests = [
@@ -190,6 +301,7 @@ export default function TripPlanner() {
 
         {/* Generated Plan Content */}
         <div className="max-w-5xl mx-auto px-6 py-16">
+            <div id="print-area">
           {/* Trip Summary Card */}
           <div className="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-gray-900 dark:to-gray-950 rounded-2xl p-8 mb-8 border border-teal-200 dark:border-teal-800">
             <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-6 flex items-center">
@@ -237,12 +349,21 @@ export default function TripPlanner() {
               Your Personalized Itinerary
             </h2>
             
-            <div className="prose prose-lg dark:prose-invert max-w-none">
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-relaxed">
-                {generatedPlan}
+            <div className="prose prose-sm dark:prose-invert max-w-none">
+              <div className="
+               bg-white dark:bg-gray-900
+                rounded-2xl
+                p-8
+               border border-gray-200 dark:border-gray-700
+               ">
+               {formatItinerary(generatedPlan)}
               </div>
+
+
             </div>
           </div>
+          </div> {/* END print-area */}
+
          {/* Refinement Section */}
           <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 mb-8">
             <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
